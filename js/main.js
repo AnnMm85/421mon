@@ -41,8 +41,6 @@ Vue.component('product-tabs', {
 })
 
 
-
-
 Vue.component('product-review', {
     template: `
 
@@ -90,9 +88,9 @@ Vue.component('product-review', {
             errors: []
         }
     },
-    methods:{
+    methods: {
         onSubmit() {
-            if(this.name && this.review && this.rating) {
+            if (this.name && this.review && this.rating) {
                 let productReview = {
                     name: this.name,
                     review: this.review,
@@ -103,9 +101,9 @@ Vue.component('product-review', {
                 this.review = null
                 this.rating = null
             } else {
-                if(!this.name) this.errors.push("Name required.")
-                if(!this.review) this.errors.push("Review required.")
-                if(!this.rating) this.errors.push("Rating required.")
+                if (!this.name) this.errors.push("Name required.")
+                if (!this.review) this.errors.push("Review required.")
+                if (!this.rating) this.errors.push("Rating required.")
             }
         }
     }
@@ -156,7 +154,13 @@ Vue.component('product', {
                    :style="{ backgroundColor:variant.variantColor }"
                    @mouseover="updateProduct(index)"
            ></div>
-          
+           <div>
+                <button v-on:click="countAdd -= 1">-</button>
+                <div class="countAdd">
+                    <p>Кол-во товара: {{countAdd}}</p>
+                </div>
+                <button v-on:click="countAdd += 1">+</button>
+           </div>
            <button
                    v-on:click="addToCart"
                    :disabled="!inStock"
@@ -191,12 +195,17 @@ Vue.component('product', {
             ],
             reviews: [],
             tabs: ['Shipping', 'moreDetail'],
-            selectedTab: 'Shipping'  // устанавливается с помощью @click
+            selectedTab: 'Shipping',  // устанавливается с помощью @click
+
+            countAdd: 0,
         }
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+                for (let i = 0; i < this.countAdd; i++) {
+                    this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+                }
+                this.countAdd = 0
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -234,7 +243,8 @@ let app = new Vue({
         cart: []
     },
     methods: {
-        updateCart(id) {
+        updateCart(id)
+        {
             this.cart.push(id);
         }
     }
